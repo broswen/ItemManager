@@ -1,0 +1,32 @@
+Resources:
+  ItemTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+       TableName: ${self:service}-${self:provider.stage}-items
+       BillingMode: PAY_PER_REQUEST
+       AttributeDefinitions:
+         - AttributeName: PK
+           AttributeType: S
+         - AttributeName: SK
+           AttributeType: S
+       KeySchema:
+         - AttributeName: PK
+           KeyType: HASH
+         - AttributeName: SK
+           KeyType: RANGE
+
+  ReportsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+       TableName: ${self:service}-${self:provider.stage}-reports
+       BillingMode: PAY_PER_REQUEST
+       AttributeDefinitions:
+         - AttributeName: PK
+           AttributeType: S
+         - AttributeName: SK
+           AttributeType: S
+       KeySchema:
+         - AttributeName: PK
+           KeyType: HASH
+         - AttributeName: SK
+           KeyType: RANGE

@@ -1,0 +1,26 @@
+{
+  "name": "ItemManager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.12.0",
+    "@aws-sdk/client-s3": "^3.12.0",
+    "@aws-sdk/client-sfn": "^3.12.0",
+    "@middy/core": "^2.0.1",
+    "@middy/http-error-handler": "^2.0.1",
+    "@middy/http-json-body-parser": "^2.0.1",
+    "@middy/validator": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.75",
+    "serverless-plugin-typescript": "^1.1.9",
+    "typescript": "^4.2.4"
+  }
+}
