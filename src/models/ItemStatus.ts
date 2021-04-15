@@ -1,0 +1,1 @@
+export const ItemStatus: String[] = ['PENDING', 'IN-PROGRESS', 'COMPLETED', 'ARCHIVED']
