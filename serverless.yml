@@ -67,6 +67,26 @@ functions:
   #         path: /items
   #         method: post
 
+  StartReport:
+    handler: src/lambdas/StartReport.handler
+    events:
+      - httpApi:
+          path: /report
+          method: post
+
+  GetReportStatus:
+    handler: src/lambdas/GetReportStatus.handler
+    events:
+      - httpApi:
+          path: /report/{id}
+          method: get
+
+  GetReportUrl:
+    handler: src/lambdas/GetReportUrl.handler
+    events:
+      - httpApi:
+          path: /report/{id}/url
+          method: get
 
 
 # you can add CloudFormation resource templates here

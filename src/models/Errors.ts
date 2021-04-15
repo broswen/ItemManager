@@ -12,3 +12,10 @@ export class ItemNotFoundError extends ServiceError {
         super('item not found')
     }
 }
+
+export class ReportNotFoundError extends ServiceError {
+    code: 'ReportNotFound'
+    constructor() {
+        super('report not foudn')
+    }
+}
