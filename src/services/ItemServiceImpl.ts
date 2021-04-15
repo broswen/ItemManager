@@ -128,7 +128,8 @@ export class ItemServiceImpl implements ItemService {
                     S: item.modified.toISOString()
                 },
             },
-            ConditionExpression: 'attribute_exists(PK)'
+            ConditionExpression: 'attribute_exists(PK)',
+            ReturnValues: 'ALL_NEW'
         }
 
         let response: UpdateItemCommandOutput
@@ -138,7 +139,16 @@ export class ItemServiceImpl implements ItemService {
             throw error
         }
 
-        return item;
+        const newItem: Item = {
+            id: response.Attributes.id.S,
+            name: response.Attributes.name.S,
+            description: response.Attributes.description.S,
+            created: new Date(response.Attributes.created.S),
+            modified: new Date(response.Attributes.modified.S),
+            status: response.Attributes.status.S,
+            tags: response.Attributes.tags.SS
+        }
+        return newItem
     }
 
 

@@ -14,11 +14,16 @@ provider:
   stage: dev
   region: us-east-1
 
-#  iamRoleStatements:
-#    - Effect: "Allow"
-#      Action:
-#        - "s3:ListBucket"
-#      Resource: { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "ServerlessDeploymentBucket" } ] ]  }
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - !GetAtt ItemsTable.Arn
+        - !GetAtt ReportsTable.Arn
 
   environment:
     ITEMSTABLE: !Ref ItemsTable
@@ -55,12 +60,12 @@ functions:
           path: /item/{id}
           method: delete
 
-  BatchCreateItem:
-    handler: src/lambdas/BatchCreateItem.handler
-    events:
-      - httpApi:
-          path: /items
-          method: post
+  # BatchCreateItem:
+  #   handler: src/lambdas/BatchCreateItem.handler
+  #   events:
+  #     - httpApi:
+  #         path: /items
+  #         method: post
 
 
 

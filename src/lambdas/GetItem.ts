@@ -6,7 +6,7 @@ import httpErrorHandler from '@middy/http-error-handler';
 import jsonBodyParser from '@middy/http-json-body-parser';
 import validator from '@middy/validator';
 import createError from 'http-errors';
-import KSUID from 'ksuid';
+import { ItemNotFoundError } from '../models/Errors';
 import { Item } from '../models/Item';
 import { ItemService } from '../services/ItemService';
 import { ItemServiceImpl } from '../services/ItemServiceImpl';
@@ -16,50 +16,38 @@ const itemService: ItemService = new ItemServiceImpl(new DynamoDBClient({}))
 const inputSchema = {
   type: 'object',
   properties: {
-    body: {
+    pathParemeters: {
       type: 'object',
       properties: {
-        name: { type: 'string', minLength: 1, maxLength: 30 },
-        description: { type: 'string', minLength: 1, maxLength: 300 },
-        tags: { type: 'array', items: { type: 'string', minLength: 1, maxLength: 15 } },
-        status: { type: 'string', minLength: 1, maxLength: 15 },
+        id: { type: 'string', minLength: 1, maxLength: 30 },
       },
-      required: ['name', 'description', 'tags', 'status']
+      required: ['id']
     }
   }
 }
 
-const createItem = async (event) => {
+const getItem = async (event) => {
 
-  const ksuid = await KSUID.random();
-  const id: string = ksuid.string
-  const now: Date = new Date()
-
-  const item: Item = {
-    id,
-    name: event.body.name,
-    description: event.body.description,
-    tags: event.body.tags,
-    status: event.body.status,
-    modified: now,
-    created: now
-  }
-
-  let newItem: Item
+  let item: Item
   try {
-    newItem = await itemService.createItem(item)
+    item = await itemService.getItem(event.pathParameters.id)
   } catch (error) {
     console.error(error)
+
+    if (error instanceof ItemNotFoundError) {
+      throw new createError(404)
+    }
+
     throw new createError(500)
   }
 
   return {
     statusCode: 200,
-    body: JSON.stringify(newItem),
+    body: JSON.stringify(item),
   }
 }
 
-const handler = middy(createItem)
+const handler = middy(getItem)
   .use(jsonBodyParser())
   .use(validator({ inputSchema }))
   .use(httpErrorHandler())
