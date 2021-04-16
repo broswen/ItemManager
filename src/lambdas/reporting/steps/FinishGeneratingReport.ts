@@ -18,13 +18,17 @@ module.exports.handler = async (event: { id: string, s3Key: string }) => {
         S: `R#${event.id}`
       }
     },
-    UpdateExpression: 'SET #s = :s',
+    UpdateExpression: 'SET #s = :s, #k = :k',
     ExpressionAttributeNames: {
-      '#s': 'status'
+      '#s': 'status',
+      '#k': 's3Key'
     },
     ExpressionAttributeValues: {
       ':s': {
         S: 'COMPLETED'
+      },
+      ':k': {
+        S: event.s3Key
       }
     }
   }

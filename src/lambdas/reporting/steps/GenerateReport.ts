@@ -10,5 +10,5 @@ module.exports.handler = async (event: { id: string }) => {
   // upload to s3 with report id as key .csv
   // return s3Key
 
-  return event
+  return { id: event.id, s3Key: '' }
 }
