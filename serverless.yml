@@ -25,6 +25,12 @@ provider:
       Resource:
         - !GetAtt ItemsTable.Arn
         - !GetAtt ReportsTable.Arn
+    - Effect: "Allow"
+      Action:
+        - s3:GetItem
+      Resource:
+        - !GetAtt ReportsBucket.Arn
+        - !Join [ "/", [!GetAtt ReportsBucket.Arn, "*" ] ]
 
   environment:
     ITEMSTABLE: !Ref ItemsTable
@@ -92,6 +98,38 @@ functions:
   ReportsStreamWatcher:
     handler: src/lambdas/reporting/ReportsStreamWatcher.handler
     role: !GetAtt ReportsStreamWatcherRole.Arn
+    environment:
+      GENERATEREPORTSFN: !Ref GenerateReportStateMachine
+
+  StartGeneratingReport:
+    handler: src/lambdas/reporting/steps/StartGeneratingReport.handler
+
+  FinishGeneratingReport:
+    handler: src/lambdas/reporting/steps/FinishGeneratingReport.handler
+
+  GenerateReport:
+    handler: src/lambdas/reporting/steps/GenerateReport.handler
+
+stepFunctions:
+  stateMachines:
+    generateReportSfn:
+      name: GenerateReportStateMachine
+      id: GenerateReportStateMachine
+      definition:
+        StartAt: startGeneratingReport
+        States:
+          startGeneratingReport:
+            Type: Task
+            Resource: !GetAtt StartGeneratingReport.Arn
+            Next: generateReport
+          generateReport:
+            Type: Task
+            Resource: !GetAtt GenerateReport.Arn
+            Next: finishGeneratingReport
+          finishGeneratingReport:
+            Type: Task
+            Resource: !GetAtt FinishGeneratingReport.Arn
+            End: true
 
 
 # you can add CloudFormation resource templates here
