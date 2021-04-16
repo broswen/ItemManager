@@ -3,6 +3,7 @@ frameworkVersion: '2'
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-step-functions
 
 provider:
   name: aws
@@ -68,28 +69,33 @@ functions:
   #         method: post
 
   StartReport:
-    handler: src/lambdas/StartReport.handler
+    handler: src/lambdas/reporting/StartReport.handler
     events:
       - httpApi:
           path: /report
           method: post
 
   GetReportStatus:
-    handler: src/lambdas/GetReportStatus.handler
+    handler: src/lambdas/reporting/GetReportStatus.handler
     events:
       - httpApi:
           path: /report/{id}
           method: get
 
   GetReportUrl:
-    handler: src/lambdas/GetReportUrl.handler
+    handler: src/lambdas/reporting/GetReportUrl.handler
     events:
       - httpApi:
           path: /report/{id}/url
           method: get
+
+  ReportsStreamWatcher:
+    handler: src/lambdas/reporting/ReportsStreamWatcher.handler
+    role: !GetAtt ReportsStreamWatcherRole.Arn
 
 
 # you can add CloudFormation resource templates here
 resources:
   - ${file(./cfn-resources/dynamodb.yml)}
   - ${file(./cfn-resources/s3.yml)}
+  - ${file(./cfn-resources/iam.yml)}

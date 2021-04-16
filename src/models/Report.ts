@@ -2,8 +2,7 @@ export interface Report {
     id: string
     created: Date
     s3Key: string
-    startDate: Date
-    stopDate: Date
+    itemIds: string[]
     status: ReportStatus
 }
 

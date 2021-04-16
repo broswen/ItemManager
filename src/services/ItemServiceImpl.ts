@@ -174,8 +174,8 @@ export class ItemServiceImpl implements ItemService {
 
         return id
     }
+
     async getItems(sortBy?: string, status?: string): Promise<Item[]> {
         throw new Error("Method not implemented.");
     }
-
 }

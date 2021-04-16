@@ -16,8 +16,8 @@ export class ReportServiceImpl implements ReportService {
         }
     }
     // put report in dynamodb to asynchronously start report
-    // generate id, startdate, stopdate, status = waiting
-    async startReport(id: string, startDate: Date, stopDate: Date): Promise<string> {
+    // generate id, startdate, stopdate, status = starting
+    async startReport(id: string, itemIds: string[]): Promise<string> {
         const params: PutItemCommandInput = {
             TableName: process.env.REPORTSTABLE,
             Item: {
@@ -30,17 +30,14 @@ export class ReportServiceImpl implements ReportService {
                 id: {
                     S: id
                 },
-                startDate: {
-                    S: startDate.toISOString()
-                },
-                stopDate: {
-                    S: stopDate.toISOString()
+                itemIds: {
+                    L: itemIds.map(id => ({ S: id }))
                 },
                 status: {
                     S: 'STARTING'
                 },
                 created: {
-                    S: ''
+                    S: new Date().toISOString()
                 },
                 s3Key: {
                     S: ''
@@ -84,8 +81,7 @@ export class ReportServiceImpl implements ReportService {
 
         const report: Report = {
             id: response.Item.id.S,
-            startDate: new Date(response.Item.startDate.S),
-            stopDate: new Date(response.Item.stopDate.S),
+            itemIds: response.Item.itemIds.L.map(val => val.S),
             status: response.Item.status.S as ReportStatus,
             s3Key: response.Item.s3Key.S,
             created: new Date(response.Item.created.S)
@@ -101,6 +97,7 @@ export class ReportServiceImpl implements ReportService {
         }
 
         const report: Report = await this.getReportStatus(id)
+        console.log(report)
 
         if (report.s3Key === '') {
             return ''

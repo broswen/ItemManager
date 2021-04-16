@@ -2,31 +2,41 @@ Resources:
   ItemsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-       TableName: ${self:service}-${self:provider.stage}-items
-       BillingMode: PAY_PER_REQUEST
-       AttributeDefinitions:
-         - AttributeName: PK
-           AttributeType: S
-         - AttributeName: SK
-           AttributeType: S
-       KeySchema:
-         - AttributeName: PK
-           KeyType: HASH
-         - AttributeName: SK
-           KeyType: RANGE
+      TableName: ${self:service}-${self:provider.stage}-items
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
 
   ReportsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-       TableName: ${self:service}-${self:provider.stage}-reports
-       BillingMode: PAY_PER_REQUEST
-       AttributeDefinitions:
-         - AttributeName: PK
-           AttributeType: S
-         - AttributeName: SK
-           AttributeType: S
-       KeySchema:
-         - AttributeName: PK
-           KeyType: HASH
-         - AttributeName: SK
-           KeyType: RANGE
+      TableName: ${self:service}-${self:provider.stage}-reports
+      BillingMode: PAY_PER_REQUEST
+      StreamSpecification: 
+        StreamViewType: KEYS_ONLY
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+
+  ReportsTableEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      EventSourceArn: !GetAtt ReportsTable.StreamArn
+      FunctionName: !GetAtt ReportsStreamWatcherLambdaFunction.Arn
+      MaximumRetryAttempts: 1
+      StartingPosition: LATEST
