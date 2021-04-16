@@ -22,12 +22,14 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
+        - dynamodb:BatchGetItem
       Resource:
         - !GetAtt ItemsTable.Arn
         - !GetAtt ReportsTable.Arn
     - Effect: "Allow"
       Action:
-        - s3:GetItem
+        - s3:GetObject
+        - s3:PutObject
       Resource:
         - !GetAtt ReportsBucket.Arn
         - !Join [ "/", [!GetAtt ReportsBucket.Arn, "*" ] ]
@@ -98,6 +100,7 @@ functions:
   ReportsStreamWatcher:
     handler: src/lambdas/reporting/ReportsStreamWatcher.handler
     role: !GetAtt ReportsStreamWatcherRole.Arn
+    reservedConcurrency: 1
     environment:
       GENERATEREPORTSFN: !Ref GenerateReportStateMachine
 
